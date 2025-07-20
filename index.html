@@ -1,0 +1,464 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>HBD Miss Shavi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kodchasan&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/parallax-js@3.1.0/dist/parallax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion/dist/framer-motion.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      font-family: "Kodchasan", sans-serif;
+      cursor: none; /* Hide default cursor */
+    }
+    /* Rotate arrow 45deg */
+    .rotate-45 {
+      transform: rotate(45deg);
+    }
+    /* Modal transitions */
+    #modalOverlay {
+      transition: opacity 0.3s ease;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      z-index: 9999;
+    }
+    #modalBox {
+      transition: transform 0.3s ease;
+      margin-bottom: 1.5rem; /* gap from bottom */
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      background-color: rgba(229, 231, 235, 0.1); /* Tailwind gray-300 with 10% opacity */
+      backdrop-filter: blur(12px);
+      border-radius: 0.375rem; /* same as button rounded-md (6px) */
+      color: white;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1; /* further reduced line height */
+      box-shadow: 0 8px 32px 0 rgba(114, 104, 255, 0.3);
+      max-width: 400px;
+      width: 90vw;
+      position: relative;
+    }
+    /* Close button adjustments */
+    #closeModal {
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      background: transparent;
+      border: none;
+      position: absolute;
+      z-index: 10;
+      transition: color 0.2s ease;
+      filter: drop-shadow(0 0 1px black);
+    }
+    #closeModal:hover {
+      color: #1a1a1a; /* pink-500 */
+    }
+    /* SVG close icon styling */
+    #closeModal svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke: white;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 1px black);
+    }
+    /* Reduce line spacing in modal text */
+    #modalBox p {
+      margin-bottom: 0.1rem;
+    }
+    #modalBox p:last-child {
+      margin-bottom: 0;
+    }
+    /* Text color for dull text */
+    #modalBox .dull-text {
+      color: rgba(156, 163, 175, 0.8); /* Tailwind gray-400 with 80% opacity */
+      font-weight: 300;
+      white-space: pre-line;
+      margin-top: 0.25rem;
+      line-height: 1;
+    }
+
+    /* Custom cursor styles */
+    .cursor-dot,
+    .cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      border-radius: 50%;
+      transform: translate(50%, 50%);
+      transition: background-color 0.3s ease, opacity 0.3s ease, border-color 0.3s ease;
+      z-index: 99999;
+      mix-blend-mode: difference;
+      will-change: transform, opacity;
+    }
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background-color: white;
+      transition: background-color 0.15s ease, transform 0.15s ease;
+      z-index: 99999;
+      box-shadow: 0 0 6px 1px rgba(255 255 255 / 0.8);
+    }
+    .cursor-ring {
+      width: 36px;
+      height: 36px;
+      border: 2px solid white;
+      margin-top: -.8em;
+      margin-left: -.8em;
+      opacity: 0.5;
+      transition: opacity 0.3s ease, border-color 0.3s ease, transform 0.15s ease;
+      z-index: 99998;
+      box-shadow: 0 0 8px 2px rgba(114 104 255 / 0.6);
+    }
+    /* Hover effect on interactive elements */
+    button:hover ~ .cursor-dot,
+    button:focus ~ .cursor-dot,
+    a:hover ~ .cursor-dot,
+    a:focus ~ .cursor-dot {
+      background-color: #fff; 
+      transform: scale(1.5);\
+    }
+    button:hover ~ .cursor-ring,
+    button:focus ~ .cursor-ring,
+    a:hover ~ .cursor-ring,
+    a:focus ~ .cursor-ring {
+      opacity: 1;
+      transform: scale(1.5);
+      border-color: #fff;
+    }
+    /* Click effect */
+    .cursor-click .cursor-dot {
+      animation: clickScale 0.4s forwards;
+      background-color: #fff !important;
+    }
+    .cursor-click .cursor-ring {
+      animation: clickRing 0.3s forwards;
+      border-color: #fff !important;
+      opacity: 1 !important;
+    }
+    @keyframes clickScale {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    @keyframes clickRing {
+      0% {
+        transform: scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.5;
+      }
+    }
+  </style>
+</head>
+<body class="relative min-h-screen bg-black text-white overflow-hidden">
+  <!-- Blue gradient circles with new colors and animation using framer-motion -->
+  <div
+    id="blob1"
+    aria-hidden="true"
+    class="pointer-events-none absolute top-12 left-6 w-[320px] h-[320px] rounded-full blur-[100px] opacity-90"
+    style="background: radial-gradient(circle at center, #7268ff 0%, #000d9e 100%);
+      z-index: 0;"
+  ></div>
+  <div
+    id="blob2"
+    aria-hidden="true"
+    class="pointer-events-none absolute bottom-12 right-6 w-[400px] h-[400px] rounded-full blur-[100px] opacity-90"
+    style="background: radial-gradient(circle at center, #7268ff 0%, #000d9e 100%);
+      z-index: 0;"
+  ></div>
+  <!-- Top right button with arrow icon rotated 45deg and link to Instagram -->
+  <a
+    href="https://www.instagram.com/_shaviixx_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Tag me on Instagram"
+    class="absolute top-6 right-6 flex items-center gap-2 bg-gray-300 bg-opacity-[0.1] backdrop-blur-md rounded-lg px-4 py-2 text-white text-sm font-normal hover:bg-gray-300 hover:bg-opacity-20 transition z-20"
+  >
+    Tag me on instagram
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="rotate-45"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M17 7l-10 10M7 7h10v10" />
+    </svg>
+  </a>
+  <!-- Center content -->
+  <main
+    class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4"
+  >
+    <div
+      class="w-36 h-36 rounded-full bg-gray-300 bg-opacity-[0.1] backdrop-blur-md border border-gray-300 border-opacity-10 flex items-center justify-center"
+      id="parallax-container"
+    >
+      <img
+        alt="Profile image in circle with reduced padding"
+        class="rounded-full w-32 h-32 object-cover"
+        height="128"
+        src="https://scontent.cdninstagram.com/v/t51.75761-19/502741347_18011130275743186_8333635501698292563_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=108&ccb=1-7&_nc_sid=f7ccc5&_nc_ohc=xpbdUctly8kQ7kNvwFuzmjp&_nc_oc=AdlS322wi3Oubj-JdBeSGE2XO-YljYY_DLPGtJ5GPW4--XKx02F3DqFfkQPXMD0cy46fvgNTSicN3e895Zd1Zg5m&_nc_ad=z-m&_nc_cid=2034&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=LRsgY4KXIzvYK2Oqw-6Iew&oh=00_AfTmgNfXy8HsEePHAn2FwYYvww_3BR2Pu0XT3SfqxReFCg&oe=6883038E"
+        width="128"
+        data-depth="0.3"
+      />
+    </div>
+    <p
+      class="mt-6 w-72 text-left text-gray-300 text-sm font-thin select-none"
+      data-depth="0.2"
+      id="parallax-text"
+    >
+      Smiles &amp; sprinkles to Miss
+    </p>
+    <h1
+      class="mt-1 w-72 text-center bg-gray-300 bg-opacity-[0.1] backdrop-blur-md rounded-md py-2 text-white text-xl font-normal"
+    >
+      _shaviixx_
+    </h1>
+    <button
+      id="wishBtn"
+      class="mt-4 w-72 bg-gray-300 bg-opacity-[0.1] backdrop-blur-md rounded-md py-2 px-6 text-white text-base font-normal hover:bg-gray-300 hover:bg-opacity-20 transition cursor-pointer"
+    >
+      Wish Her with virtual Kitkat!
+    </button>
+    <p id="realTime" class="absolute bottom-6 left-6 text-gray-300 text-sm font-thin select-none">
+      <!-- Real time will appear here -->
+    </p>
+    <p class="absolute bottom-6 right-6 text-white text-sm font-thin select-none">
+      Made with
+      <span class="text-pink-400">💕</span> by Orbit
+    </p>
+    <p class="mt-3 text-center text-pink-400 text-sm font-thin select-none">
+      💕 Absolutely loves KitKat! 🍫
+    </p>
+  </main>
+
+  <!-- Slide-up modal box -->
+  <div
+    id="modalOverlay"
+    class="fixed inset-0 flex items-end justify-center z-30 opacity-0 pointer-events-none"
+  >
+    <div
+      id="modalBox"
+      class="relative transform translate-y-full"
+    >
+      <button
+        id="closeModal"
+        aria-label="Close modal"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <p>
+        Thanks for the virtual KitKat! <span class="text-pink-400">💖</span>
+      </p>
+      <p class="dull-text">
+        But hey... virtual isn't enough!<br />
+        I want an actual KitKat!<br />
+        <span class="italic font-normal">*hint hint* 😉</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Custom cursor elements -->
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+
+  <script>
+    // Parallax initialization
+    const parallaxContainer = document.getElementById("parallax-container");
+    if (parallaxContainer) {
+      new Parallax(parallaxContainer, {
+        relativeInput: true,
+        hoverOnly: true,
+        pointerEvents: true,
+      });
+    }
+
+    // Animate blobs with smooth looping motion using framer-motion's animate function
+    const animate = window["framerMotion"]?.animate;
+    if (animate) {
+      const blob1 = document.getElementById("blob1");
+      const blob2 = document.getElementById("blob2");
+
+      animate(
+        blob1,
+        { translateX: [0, 20, 0], translateY: [0, 15, 0], scale: [1, 1.1, 1] },
+        { duration: 7, repeat: Infinity, ease: "easeInOut" }
+      );
+
+      animate(
+        blob2,
+        { translateX: [0, -25, 0], translateY: [0, -20, 0], scale: [1, 1.05, 1] },
+        { duration: 9, repeat: Infinity, ease: "easeInOut" }
+      );
+    }
+
+    // Modal open/close logic
+    const wishBtn = document.getElementById("wishBtn");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalBox = document.getElementById("modalBox");
+    const closeModal = document.getElementById("closeModal");
+
+    // Confetti library
+    function launchConfetti() {
+      confetti({
+        particleCount: 500, // more dense confetti
+        spread: 120,
+        origin: { y: 0.6 },
+        colors: ["#7268FF", "#000D9E", "#d946ef", "#f43f5e", "#fb7185"],
+      });
+    }
+
+    wishBtn.addEventListener("click", () => {
+      modalOverlay.classList.remove("opacity-0", "pointer-events-none");
+      setTimeout(() => {
+        modalBox.classList.remove("translate-y-full");
+        launchConfetti();
+      }, 20);
+    });
+
+    function closeModalFunc() {
+      modalBox.classList.add("translate-y-full");
+      modalOverlay.classList.add("opacity-0");
+      setTimeout(() => {
+        modalOverlay.classList.add("pointer-events-none");
+      }, 300);
+    }
+
+    closeModal.addEventListener("click", closeModalFunc);
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) {
+        closeModalFunc();
+      }
+    });
+
+    // Real-time date and time update in bottom left corner
+    const realTimeEl = document.getElementById("realTime");
+    function updateRealTime() {
+      const now = new Date();
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      };
+      realTimeEl.textContent = now.toLocaleString("en-US", options);
+    }
+    updateRealTime();
+    setInterval(updateRealTime, 1000);
+
+    // Custom cursor implementation
+    const cursorDot = document.querySelector(".cursor-dot");
+    const cursorRing = document.querySelector(".cursor-ring");
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
+
+    // Update mouse position instantly for dot
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+    });
+
+    // Smooth delayed follow for ring
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.15;
+      ringY += (mouseY - ringY) * 0.15;
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Additional effects: scale cursor on interactive elements
+    const interactiveElements = document.querySelectorAll("button, a");
+
+    interactiveElements.forEach((el) => {
+      el.addEventListener("mouseenter", () => {
+        cursorDot.style.backgroundColor = "#d946ef";
+        cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1.5)`;
+        cursorRing.style.opacity = "1";
+        cursorRing.style.borderColor = "#d946ef";
+        cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(1.5)`;
+      });
+      el.addEventListener("mouseleave", () => {
+        cursorDot.style.backgroundColor = "white";
+        cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1)`;
+        cursorRing.style.opacity = "0.5";
+        cursorRing.style.borderColor = "white";
+        cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(1)`;
+      });
+    });
+
+    // Click effect on cursor with fill animation for dot and ring
+    window.addEventListener("mousedown", () => {
+      cursorDot.style.transition = "transform 0.15s ease, background-color 0.15s ease";
+      cursorRing.style.transition = "transform 0.3s ease, opacity 0.3s ease, border-color 0.3s ease";
+      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(2)`;
+      cursorDot.style.backgroundColor = "#fff";
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(2.5)`;
+      cursorRing.style.opacity = "0";
+    });
+    window.addEventListener("mouseup", () => {
+      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1.5)`;
+      cursorDot.style.backgroundColor = "#FFF";
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(1.5)`;
+      cursorRing.style.opacity = "1";
+    });
+  </script>
+
+</body>
+</html>
